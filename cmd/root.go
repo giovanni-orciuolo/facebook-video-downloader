@@ -32,7 +32,9 @@ facebook-video-downloader <video_url>`,
 
 		uri := args[0]
 		outPath := cmd.Flag("out").Value.String()
-		if outPath == "" {
+		printUrl := cmd.Flag("url").Value.String() == "true"
+
+		if outPath == "" && !printUrl {
 			fmt.Println("Please specify video output path with --out or -o")
 			return nil
 		}
@@ -74,6 +76,11 @@ facebook-video-downloader <video_url>`,
 			return errors.New("no video found in page")
 		}
 
+		if printUrl {
+			fmt.Print(videoHref)
+			return nil
+		}
+
 		videoRes, err := http.Get(videoHref)
 		if err != nil {
 			return err
@@ -103,4 +110,5 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().StringP("out", "o", "", "video output path")
+	rootCmd.Flags().BoolP("url", "u", false, "print video url instead of downloading it")
 }
